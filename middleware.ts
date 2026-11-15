@@ -37,10 +37,27 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isOnboardingRoute = pathname.startsWith("/onboarding");
   const isPublicRoute = isAuthRoute || pathname === "/" || pathname.startsWith("/_next") || pathname.startsWith("/api/auth");
 
+  const onboardingCompleteCookie = request.cookies.get("lucy_onboarding_complete")?.value === "true";
+
+  // Gatekeeper: If user hasn't completed onboarding, direct them to /onboarding
+  if (!onboardingCompleteCookie && !isOnboardingRoute && !isAuthRoute && !pathname.startsWith("/_next") && !pathname.startsWith("/api")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/onboarding";
+    return NextResponse.redirect(url);
+  }
+
+  // If onboarding is already completed and user visits /onboarding, send to /today
+  if (onboardingCompleteCookie && isOnboardingRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/today";
+    return NextResponse.redirect(url);
+  }
+
   // If user is not authenticated and trying to access protected views
-  if (!user && !isPublicRoute) {
+  if (!user && !isPublicRoute && !isOnboardingRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

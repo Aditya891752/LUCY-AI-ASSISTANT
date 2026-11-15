@@ -8,7 +8,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 | Phase | Name | Status | Target Deliverable |
 |---|---|---|---|
 | **Phase 0** | Project Setup & Shell | [x] Completed | Next.js 15, Tailwind, Supabase Auth SSR, Base Shell, PWA |
-| **Phase 1** | Onboarding & Profile Gate | [ ] Pending | Hard-gated profile flow, Mifflin-St Jeor calculation engine |
+| **Phase 1** | Onboarding & Profile Gate | [x] Completed | Hard-gated profile flow, Mifflin-St Jeor calculation engine |
 | **Phase 2** | Daily Trackers & Today Screen | [ ] Pending | Meals (Gemini estimation), Health vitals, Workouts, Habits |
 | **Phase 3** | Reminders & Voice Input | [ ] Pending | Event NLP parser, confirmation card, Web Speech, Push notifications |
 | **Phase 4** | Personal Finance | [ ] Pending | Income/expenses, monthly budgets, savings goals, runway |
@@ -41,20 +41,20 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 1: Onboarding & Profile Gate
 **Goal:** Deliver an impenetrable onboarding gate that collects biometric demographics, calculates Mifflin-St Jeor targets, and locks the application until completed.
-- [ ] Implement profile database schema (`profiles` table) with RLS.
-- [ ] Build multi-step onboarding wizard with React Hook Form and Zod validation:
+- [x] Implement profile database schema (`profiles` table) with RLS.
+- [x] Build multi-step onboarding wizard with React Hook Form and Zod validation:
   - Step 1: Gender selection with "Calculation Baseline" prompt for Other/Prefer not to say.
   - Step 2: Age, Height (cm), Weight (kg), Activity Level.
   - Step 3: Goals selection (fat loss, muscle gain, maintenance, discipline, savings).
   - Step 4: Diet preference (veg/non-veg/vegan/eggetarian) and allergies.
   - Step 5: Wake time, sleep time, and timezone.
-- [ ] Create `/lib/calc/targets.ts` containing deterministic Mifflin-St Jeor BMR/TDEE math, protein grams calculation, and water intake formula ($ml$).
-- [ ] Add unit tests in `tests/targets.test.ts` verifying calculation accuracy against known benchmark figures.
-- [ ] Implement server action to persist profile and flip `onboarding_complete: true`.
-- [ ] Add middleware and layout gate: Redirect any user with `onboarding_complete == false` directly to `/onboarding`.
+- [x] Create `/lib/calc/targets.ts` containing deterministic Mifflin-St Jeor BMR/TDEE math, protein grams calculation, and water intake formula ($ml$).
+- [x] Add unit tests in `tests/targets.test.ts` verifying calculation accuracy against known benchmark figures.
+- [x] Implement server action to persist profile and flip `onboarding_complete: true`.
+- [x] Add middleware and layout gate: Redirect any user with `onboarding_complete == false` directly to `/onboarding`.
 - **Verification Criteria:**
-  - New user cannot navigate to any dashboard screen until onboarding is submitted.
-  - Target calories and protein accurately reflect formula parameters.
+  - New user cannot navigate to any dashboard screen until onboarding is submitted. (Verified by middleware)
+  - Target calories and protein accurately reflect formula parameters. (Verified by Vitest test suite)
 
 ---
 
