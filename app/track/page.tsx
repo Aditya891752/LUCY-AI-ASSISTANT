@@ -30,11 +30,11 @@ export default function TrackPage() {
   const [vitalAlert, setVitalAlert] = useState<string | null>(null);
 
   // Workouts State
-  const [exercise, setExercise] = useState("Barbell Bench Press");
-  const [sets, setSets] = useState("4");
-  const [reps, setReps] = useState("8");
-  const [weightKg, setWeightKg] = useState("80");
-  const [durationMin, setDurationMin] = useState("45");
+  const [exercise, setExercise] = useState("");
+  const [sets, setSets] = useState("3");
+  const [reps, setReps] = useState("10");
+  const [weightKg, setWeightKg] = useState("");
+  const [durationMin, setDurationMin] = useState("30");
   const [workoutSavedMsg, setWorkoutSavedMsg] = useState(false);
 
   // Handle Meal Estimation
@@ -397,6 +397,7 @@ export default function TrackPage() {
               <label className="text-[11px] text-muted-foreground">Exercise Name</label>
               <input
                 type="text"
+                placeholder="e.g. Squats, Running, Yoga, Dumbbell Press"
                 value={exercise}
                 onChange={(e) => setExercise(e.target.value)}
                 required
@@ -430,6 +431,7 @@ export default function TrackPage() {
                 <input
                   type="number"
                   step="0.5"
+                  placeholder="Bodyweight"
                   value={weightKg}
                   onChange={(e) => setWeightKg(e.target.value)}
                   className="w-full bg-surface-2 border border-border rounded p-2 text-xs tabular-nums text-foreground focus:border-accent"

@@ -37,18 +37,18 @@ export default function OnboardingPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<ProfileFormData>({
-    gender: "Male",
-    calc_baseline: "Male",
+  const [formData, setFormData] = useState<Partial<ProfileFormData>>({
+    gender: undefined,
+    calc_baseline: undefined,
     age: 25,
-    height_cm: 175,
-    weight_kg: 72,
+    height_cm: 168,
+    weight_kg: 64,
     activity_level: "moderate",
-    goals: ["discipline", "fat loss"],
-    diet_pref: "non-veg",
+    goals: ["discipline"],
+    diet_pref: "veg",
     allergies: [],
-    wake_time: "06:30",
-    sleep_time: "22:30",
+    wake_time: "07:00",
+    sleep_time: "23:00",
     timezone: "UTC",
   });
 
@@ -77,14 +77,22 @@ export default function OnboardingPage() {
     }));
   };
 
+  const isStep1Valid = Boolean(
+    formData.gender &&
+      (formData.gender === "Male" ||
+        formData.gender === "Female" ||
+        formData.calc_baseline)
+  );
+
   const toggleGoal = (goalId: ProfileFormData["goals"][number]) => {
     setFormData((prev) => {
-      const exists = prev.goals.includes(goalId);
+      const currentGoals = prev.goals || ["discipline"];
+      const exists = currentGoals.includes(goalId);
       if (exists) {
-        if (prev.goals.length === 1) return prev; // Keep at least one
-        return { ...prev, goals: prev.goals.filter((g) => g !== goalId) };
+        if (currentGoals.length === 1) return prev; // Keep at least one
+        return { ...prev, goals: currentGoals.filter((g) => g !== goalId) };
       } else {
-        return { ...prev, goals: [...prev.goals, goalId] };
+        return { ...prev, goals: [...currentGoals, goalId] };
       }
     });
   };
@@ -92,8 +100,9 @@ export default function OnboardingPage() {
   const addAllergy = () => {
     const trimmed = allergyInput.trim();
     if (!trimmed) return;
-    if (!formData.allergies.includes(trimmed)) {
-      setFormData((prev) => ({ ...prev, allergies: [...prev.allergies, trimmed] }));
+    const current = formData.allergies || [];
+    if (!current.includes(trimmed)) {
+      setFormData((prev) => ({ ...prev, allergies: [...current, trimmed] }));
     }
     setAllergyInput("");
   };
@@ -101,17 +110,17 @@ export default function OnboardingPage() {
   const removeAllergy = (item: string) => {
     setFormData((prev) => ({
       ...prev,
-      allergies: prev.allergies.filter((a) => a !== item),
+      allergies: (prev.allergies || []).filter((a) => a !== item),
     }));
   };
 
   const targets = calculateTargets({
-    calc_baseline: formData.calc_baseline,
-    weight_kg: formData.weight_kg,
-    height_cm: formData.height_cm,
-    age: formData.age,
-    activity_level: formData.activity_level,
-    goals: formData.goals,
+    calc_baseline: formData.calc_baseline || "Average",
+    weight_kg: formData.weight_kg || 64,
+    height_cm: formData.height_cm || 168,
+    age: formData.age || 25,
+    activity_level: formData.activity_level || "moderate",
+    goals: formData.goals || ["discipline"],
   });
 
   const handleComplete = async () => {
@@ -173,18 +182,21 @@ export default function OnboardingPage() {
       {step === 1 && (
         <div className="bg-surface-1 border border-border rounded-lg p-5 space-y-5">
           <div className="space-y-1">
-            <h2 className="text-sm font-semibold text-foreground">Gender Selection</h2>
+            <h2 className="text-sm font-semibold text-foreground">Gender & Metabolic Baseline</h2>
             <p className="text-xs text-muted-foreground">
-              Select your gender. This establishes your metabolic baseline.
+              Select your gender identity. Lucy calibrates your metabolic formula specifically to your physiology.
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            {(["Male", "Female", "Other", "Prefer not to say"] as const).map((g) => (
+            {(["Female", "Male", "Other", "Prefer not to say"] as const).map((g) => (
               <button
                 key={g}
                 type="button"
-                onClick={() => handleGenderSelect(g)}
+                onClick={() => {
+                  setErrorMsg(null);
+                  handleGenderSelect(g);
+                }}
                 className={cn(
                   "p-3 rounded-md text-xs font-semibold border text-left transition-colors",
                   formData.gender === g
@@ -201,21 +213,24 @@ export default function OnboardingPage() {
           {(formData.gender === "Other" || formData.gender === "Prefer not to say") && (
             <div className="pt-3 border-t border-border space-y-2">
               <label className="text-xs font-semibold text-foreground block">
-                Which calculation baseline should we use?
+                Which biological baseline should we use for calculations?
               </label>
               <p className="text-[11px] text-muted-foreground">
-                Required for accurate Mifflin-St Jeor calorie and health formula math.
+                Required for clinical Mifflin-St Jeor energy expenditure math. Select the biological baseline that best reflects your metabolic rate:
               </p>
               <div className="grid grid-cols-3 gap-2 pt-1">
-                {(["Male", "Female", "Average"] as const).map((b) => (
+                {(["Female", "Male", "Average"] as const).map((b) => (
                   <button
                     key={b}
                     type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, calc_baseline: b }))}
+                    onClick={() => {
+                      setErrorMsg(null);
+                      setFormData((prev) => ({ ...prev, calc_baseline: b }));
+                    }}
                     className={cn(
                       "py-2 px-3 rounded text-xs font-medium border text-center transition-colors",
                       formData.calc_baseline === b
-                        ? "bg-accent text-accent-foreground border-accent"
+                        ? "bg-accent text-accent-foreground border-accent font-semibold"
                         : "bg-surface-2 border-border text-foreground hover:border-border-active"
                     )}
                   >
@@ -225,6 +240,10 @@ export default function OnboardingPage() {
               </div>
             </div>
           )}
+
+          <div className="bg-surface-2/50 border border-border/70 rounded p-3 text-[11px] text-muted-foreground leading-relaxed">
+            💡 <strong className="text-foreground">Zero Gender Bias Guarantee:</strong> Lucy does not pre-select or assume male defaults. Calorie burn (BMR), protein absorption, and workout intensity are calibrated directly to your selected physiology, whether Female, Male, or Population Average.
+          </div>
         </div>
       )}
 
@@ -325,7 +344,7 @@ export default function OnboardingPage() {
 
           <div className="grid grid-cols-1 gap-2">
             {GOAL_OPTIONS.map((g) => {
-              const selected = formData.goals.includes(g.id);
+              const selected = (formData.goals || []).includes(g.id);
               return (
                 <button
                   key={g.id}
@@ -395,9 +414,9 @@ export default function OnboardingPage() {
                 Add
               </button>
             </div>
-            {formData.allergies.length > 0 && (
+            {(formData.allergies || []).length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {formData.allergies.map((a) => (
+                {(formData.allergies || []).map((a) => (
                   <span
                     key={a}
                     onClick={() => removeAllergy(a)}
@@ -518,8 +537,16 @@ export default function OnboardingPage() {
         {step < 4 ? (
           <button
             type="button"
-            onClick={() => setStep((s) => s + 1)}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded text-xs font-semibold text-accent-foreground bg-accent hover:bg-accent/90 active:scale-98 transition-transform"
+            disabled={step === 1 && !isStep1Valid}
+            onClick={() => {
+              if (step === 1 && !isStep1Valid) {
+                setErrorMsg("Please select your gender and metabolic baseline to proceed.");
+                return;
+              }
+              setErrorMsg(null);
+              setStep((s) => s + 1);
+            }}
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded text-xs font-semibold text-accent-foreground bg-accent hover:bg-accent/90 active:scale-98 transition-transform disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Next Step
             <ArrowRight className="w-3.5 h-3.5" />

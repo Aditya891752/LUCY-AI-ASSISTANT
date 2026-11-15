@@ -11,7 +11,7 @@ export interface SaveProfileResponse {
   targets?: ReturnType<typeof calculateTargets>;
 }
 
-export async function saveProfile(rawData: ProfileFormData): Promise<SaveProfileResponse> {
+export async function saveProfile(rawData: unknown): Promise<SaveProfileResponse> {
   const parseResult = ProfileFormSchema.safeParse(rawData);
   if (!parseResult.success) {
     return {

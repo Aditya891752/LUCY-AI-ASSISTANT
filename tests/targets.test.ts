@@ -47,4 +47,23 @@ describe("Target Calculations (Mifflin-St Jeor Engine)", () => {
     expect(targets.daily_fat_g).toBe(64); // 80kg * 0.8g
     expect(targets.daily_water_ml).toBe(80 * 35 + 500); // 3300ml
   });
+
+  it("calculates accurate targets for Female baseline with muscle gain goal", () => {
+    const targets = calculateTargets({
+      calc_baseline: "Female",
+      weight_kg: 58,
+      height_cm: 165,
+      age: 26,
+      activity_level: "moderate",
+      goals: ["muscle gain"],
+    });
+
+    // BMR: 10*58 + 6.25*165 - 5*26 - 161 = 580 + 1031.25 - 130 - 161 = 1320.25 -> 1320
+    // TDEE: 1320 * 1.55 = 2046
+    // Muscle Gain (110%): 2046 * 1.1 = 2250.6 -> 2251
+    expect(targets.daily_calories).toBe(2251);
+    expect(targets.daily_protein_g).toBe(116); // 58kg * 2.0g
+    expect(targets.daily_fat_g).toBe(46); // 58kg * 0.8g
+    expect(targets.daily_water_ml).toBe(58 * 35 + 500); // 2530ml
+  });
 });

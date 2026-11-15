@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 
 export default function TodayPage() {
   const [profileData, setProfileData] = useState<{
+    gender?: string;
+    calc_baseline?: "Male" | "Female" | "Average";
     goals?: string[];
     targets?: {
       daily_calories: number;
@@ -72,13 +74,15 @@ export default function TodayPage() {
     refreshData();
   };
 
-  const targets = profileData?.targets || {
-    daily_calories: 2200,
-    daily_protein_g: 160,
-    daily_carbs_g: 220,
-    daily_fat_g: 65,
-    daily_water_ml: 3000,
-  };
+  const baseline = profileData?.calc_baseline || "Average";
+  const defaultTargets =
+    baseline === "Female"
+      ? { daily_calories: 1800, daily_protein_g: 110, daily_carbs_g: 200, daily_fat_g: 55, daily_water_ml: 2500 }
+      : baseline === "Male"
+      ? { daily_calories: 2100, daily_protein_g: 140, daily_carbs_g: 225, daily_fat_g: 65, daily_water_ml: 3000 }
+      : { daily_calories: 1950, daily_protein_g: 125, daily_carbs_g: 210, daily_fat_g: 60, daily_water_ml: 2750 };
+
+  const targets = profileData?.targets || defaultTargets;
 
   const consumedCalories = summary?.consumed_calories || 0;
   const consumedProtein = summary?.consumed_protein_g || 0;
