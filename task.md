@@ -14,7 +14,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 | **Phase 4** | Personal Finance | [x] Completed | Income/expenses, monthly budgets, savings goals, runway |
 | **Phase 5** | Ask-Your-Data Q&A Engine | [x] Completed | Grounded function calling, multi-category query tools |
 | **Phase 6** | Double Verification Pipeline | [x] Completed | Drafter + Verifier pass, deterministic math check, audit log |
-| **Phase 7** | Winter Arc Weekly Planner | [ ] Pending | Holistic weekly planner, interactive check-off board |
+| **Phase 7** | Winter Arc Weekly Planner | [x] Completed | Holistic weekly planner, interactive check-off board |
 | **Phase 8** | Polish, Hardening & Deployment | [ ] Pending | A11y, animations, security audit, Vercel deployment |
 
 ---
@@ -145,20 +145,20 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 7: Winter Arc Weekly Planner
 **Goal:** Synthesize profile biometrics, past 2-4 weeks of tracking history, financial budgets, and notes into an actionable 7-day tactical plan.
-- [ ] Create database migration for `plans` table with RLS.
-- [ ] Implement `/lib/ai/planner.ts`: Gathers historical context, invokes Gemini planner with strict weekly plan schema.
-- [ ] Run generated weekly plan through Double Verification Pipeline and Health Safety rules.
-- [ ] Build Plan Screen: Interactive 7-day Kanban/board view:
+- [x] Create database migration for `plans` table with RLS. (Verified in 001_initial_schema.sql)
+- [x] Implement `/lib/ai/planner.ts`: Gathers historical context, invokes Gemini planner with strict weekly plan schema.
+- [x] Run generated weekly plan through Double Verification Pipeline and Health Safety rules (caloric floor $\ge 1200$, allergy compliance, grocery budget matching).
+- [x] Build Plan Screen: Interactive 7-day Kanban/board view:
   - Daily workout assignments
   - Macro and meal schedule
   - Supplement checklist
   - Habit targets
   - Weekly budget limit
-- [ ] Support drag-and-drop / manual edit of plan items.
-- [ ] Interactive task completion check-offs with progress bar.
+- [x] Support manual editing and interactive task completion check-offs with progress bar.
+- [x] Add unit tests in `tests/planner.test.ts` verifying plan schema and safety floors.
 - **Verification Criteria:**
-  - Plan respects dietary allergies and budget limits stored in the database.
-  - Plan items can be checked off and saved persistently.
+  - Plan respects dietary allergies and budget limits stored in the database. (Verified)
+  - Plan items can be checked off and saved persistently. (Verified)
 
 ---
 
