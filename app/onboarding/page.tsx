@@ -241,8 +241,50 @@ export default function OnboardingPage() {
             </div>
           )}
 
+          {/* Gender Confirmation & Dynamic Feature Unlocks */}
+          {formData.gender && (
+            <div className="bg-surface-2/80 border border-accent/40 rounded-lg p-3.5 space-y-2.5 animate-in fade-in duration-150">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-accent flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Confirmed: {formData.gender}
+                </span>
+                <span className="text-[10px] text-muted-foreground font-mono bg-surface-1 px-2 py-0.5 rounded border border-border">
+                  Baseline: {formData.calc_baseline || "Selecting..."}
+                </span>
+              </div>
+
+              <div className="space-y-1.5 text-xs text-foreground">
+                <div className="text-[11px] font-semibold text-muted-foreground">
+                  Personalized Features Activated For Your Profile:
+                </div>
+                {formData.gender === "Female" && (
+                  <ul className="space-y-1 text-[11px] text-muted-foreground list-disc list-inside">
+                    <li><strong className="text-foreground">Cycle Rhythm Tracker:</strong> Unlocks phase tracking (Follicular, Ovulatory, Luteal, Menstrual) in Health Vitals.</li>
+                    <li><strong className="text-foreground">Micronutrient Intelligence:</strong> Automatic emphasis on Iron, Folate, Calcium, and Vitamin D balance.</li>
+                    <li><strong className="text-foreground">Clinical Female BMR:</strong> Mifflin-St Jeor equation calibrated with female metabolic factor (-161 kcal).</li>
+                    <li><strong className="text-foreground">Hormone-Synchronized Training:</strong> Strength and recovery intensity aligned with your energy curve.</li>
+                  </ul>
+                )}
+                {formData.gender === "Male" && (
+                  <ul className="space-y-1 text-[11px] text-muted-foreground list-disc list-inside">
+                    <li><strong className="text-foreground">Clinical Male BMR:</strong> Mifflin-St Jeor equation calibrated with male metabolic baseline (+5 kcal).</li>
+                    <li><strong className="text-foreground">Hypertrophy & Strength Volume:</strong> Progressive overload tracking and upper/lower stimulus balance.</li>
+                    <li><strong className="text-foreground">Hormonal Recovery Scheduling:</strong> Zinc, Magnesium, and Vitamin D3 optimization in your supplements plan.</li>
+                  </ul>
+                )}
+                {(formData.gender === "Other" || formData.gender === "Prefer not to say") && (
+                  <ul className="space-y-1 text-[11px] text-muted-foreground list-disc list-inside">
+                    <li><strong className="text-foreground">Custom Metabolic Baseline:</strong> Mathematical energy targets driven by your chosen biological baseline.</li>
+                    <li><strong className="text-foreground">Flexible Health Metrics:</strong> Comprehensive vitals, sleep, mood, and functional training with zero assumptions.</li>
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="bg-surface-2/50 border border-border/70 rounded p-3 text-[11px] text-muted-foreground leading-relaxed">
-            💡 <strong className="text-foreground">Zero Gender Bias Guarantee:</strong> Lucy does not pre-select or assume male defaults. Calorie burn (BMR), protein absorption, and workout intensity are calibrated directly to your selected physiology, whether Female, Male, or Population Average.
+            💡 <strong className="text-foreground">Adaptive Intelligence:</strong> Lucy confirms your gender first so every feature—meal recommendations, health metrics, and your 7-day Winter Arc plan—adapts specifically to your physiology.
           </div>
         </div>
       )}

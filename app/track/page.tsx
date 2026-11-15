@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Utensils, HeartPulse, Dumbbell, Sparkles, Check, AlertCircle, Plus, Flame } from "lucide-react";
 import { estimateMealMacros, MealEstimate } from "@/lib/ai/meals";
 import { logMeal, logVitals, logWorkout } from "@/lib/actions/trackers";
+import { getProfile } from "@/lib/actions/profile";
+import { saveNote } from "@/lib/actions/notes";
 import { cn } from "@/lib/utils";
 
 type TrackTab = "meals" | "vitals" | "workouts";
 
 export default function TrackPage() {
   const [activeTab, setActiveTab] = useState<TrackTab>("meals");
+  const [profile, setProfile] = useState<{ gender?: string; calc_baseline?: string } | null>(null);
+  const [cyclePhase, setCyclePhase] = useState("");
+
+  useEffect(() => {
+    getProfile().then((p) => {
+      if (p) setProfile(p);
+    });
+  }, []);
 
   // Meal Tracker State
   const [mealText, setMealText] = useState("");
@@ -83,6 +93,10 @@ export default function TrackPage() {
       bp_dia: bpDia ? parseInt(bpDia) : undefined,
       glucose: glucose ? parseInt(glucose) : undefined,
     });
+
+    if (cyclePhase) {
+      await saveNote(`Cycle phase logged: ${cyclePhase} on ${new Date().toLocaleDateString()}`, "Health");
+    }
 
     setVitalAlert(res.vitals.medical_alert || null);
     setVitalsSavedMsg(true);
@@ -360,6 +374,43 @@ export default function TrackPage() {
                 </div>
               </div>
             </div>
+
+            {/* Female Health & Cycle Tracking */}
+            {profile?.gender === "Female" && (
+              <div className="pt-3 border-t border-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-accent uppercase tracking-wider block">
+                    Cycle & Hormonal Rhythm Phase
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">Female Health Module</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(["Menstrual", "Follicular", "Ovulatory", "Luteal"] as const).map((phase) => (
+                    <button
+                      key={phase}
+                      type="button"
+                      onClick={() => setCyclePhase(cyclePhase === phase ? "" : phase)}
+                      className={cn(
+                        "py-2 px-1 text-center rounded border text-[11px] font-medium transition-colors",
+                        cyclePhase === phase
+                          ? "bg-accent text-accent-foreground border-accent font-semibold"
+                          : "bg-surface-2 border-border text-foreground hover:border-border-active"
+                      )}
+                    >
+                      {phase}
+                    </button>
+                  ))}
+                </div>
+                {cyclePhase && (
+                  <p className="text-[11px] text-muted-foreground bg-surface-2 p-2.5 rounded border border-border leading-relaxed">
+                    {cyclePhase === "Follicular" && "⚡ Follicular Phase: High insulin sensitivity & estrogen rise. Ideal for progressive strength training and higher carbohydrate fuel."}
+                    {cyclePhase === "Ovulatory" && "🔥 Ovulatory Phase: Peak energy & power output. Prime window for intense workouts and personal bests."}
+                    {cyclePhase === "Luteal" && "🌙 Luteal Phase: Progesterone elevates resting metabolic rate (+100-200 kcal). Focus on hydration, magnesium, and steady-state sessions."}
+                    {cyclePhase === "Menstrual" && "💧 Menstrual Phase: Prioritize iron-rich nutrition, restorative sleep, gentle mobility, and hydration."}
+                  </p>
+                )}
+              </div>
+            )}
 
             {vitalAlert && (
               <div className="bg-fire/15 border border-fire text-fire text-xs p-3 rounded flex items-start gap-2">
