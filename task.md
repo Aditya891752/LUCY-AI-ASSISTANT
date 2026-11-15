@@ -12,7 +12,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 | **Phase 2** | Daily Trackers & Today Screen | [x] Completed | Meals (Gemini estimation), Health vitals, Workouts, Habits |
 | **Phase 3** | Reminders & Voice Input | [x] Completed | Event NLP parser, confirmation card, Web Speech, Push notifications |
 | **Phase 4** | Personal Finance | [x] Completed | Income/expenses, monthly budgets, savings goals, runway |
-| **Phase 5** | Ask-Your-Data Q&A Engine | [ ] Pending | Grounded function calling, multi-category query tools |
+| **Phase 5** | Ask-Your-Data Q&A Engine | [x] Completed | Grounded function calling, multi-category query tools |
 | **Phase 6** | Double Verification Pipeline | [ ] Pending | Drafter + Verifier pass, deterministic math check, audit log |
 | **Phase 7** | Winter Arc Weekly Planner | [ ] Pending | Holistic weekly planner, interactive check-off board |
 | **Phase 8** | Polish, Hardening & Deployment | [ ] Pending | A11y, animations, security audit, Vercel deployment |
@@ -112,21 +112,16 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 5: Grounded Ask-Your-Data Q&A Engine
 **Goal:** Deliver a conversational query interface powered by Gemini function calling across all 8 user categories.
-- [ ] Create database migration for `notes` table (freeform user preferences) with RLS.
-- [ ] Implement tool declarations for Gemini in `/lib/ai/tools/`:
-  - `query_meals(from, to)`
-  - `query_events(from, to, query)`
-  - `query_health(metric, from, to)`
-  - `query_workouts(from, to)`
-  - `query_habits(from, to)`
-  - `query_money(from, to, type)`
-  - `query_notes(query)`
-- [ ] Build `/api/ai/ask` endpoint executing function calls strictly within authenticated user context.
-- [ ] Build Chat UI on Ask screen: Displays conversation history, message status, and "Searching records..." state.
-- [ ] If data is missing for a given query, guarantee model explicitly outputs that records do not contain the answer.
+- [x] Create database migration for `notes` table (freeform user preferences) with RLS. (Verified in 001_initial_schema.sql)
+- [x] Implement tool declarations and query executor in `/lib/ai/tools/grounding.ts` spanning all categories: Meals, Schedule, Health, Fitness, Habits, Money, and Notes.
+- [x] Build `/api/ai/ask` endpoint executing function calls strictly within authenticated user context.
+- [x] Build Chat UI on Ask screen: Displays conversation history, message status, and "Searching records..." state.
+- [x] If data is missing for a given query, guarantee model explicitly outputs that records do not contain the answer.
+- [x] Build User Preferences & Constraints Drawer for managing permanent facts (*"I don't eat after 9 pm"*).
+- [x] Add unit tests in `tests/qa-tools.test.ts` verifying category query routing.
 - **Verification Criteria:**
-  - Asking *"What did I eat on Monday?"* calls `query_meals` and responds with exact database items.
-  - Asking about unrecorded data responds with *"not found in your records"*.
+  - Asking *"What did I eat on Monday?"* calls `query_meals` and responds with exact database items. (Verified)
+  - Asking about unrecorded data responds with *"not found in your records"*. (Verified)
 
 ---
 
