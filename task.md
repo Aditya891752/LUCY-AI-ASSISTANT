@@ -11,7 +11,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 | **Phase 1** | Onboarding & Profile Gate | [x] Completed | Hard-gated profile flow, Mifflin-St Jeor calculation engine |
 | **Phase 2** | Daily Trackers & Today Screen | [x] Completed | Meals (Gemini estimation), Health vitals, Workouts, Habits |
 | **Phase 3** | Reminders & Voice Input | [x] Completed | Event NLP parser, confirmation card, Web Speech, Push notifications |
-| **Phase 4** | Personal Finance | [ ] Pending | Income/expenses, monthly budgets, savings goals, runway |
+| **Phase 4** | Personal Finance | [x] Completed | Income/expenses, monthly budgets, savings goals, runway |
 | **Phase 5** | Ask-Your-Data Q&A Engine | [ ] Pending | Grounded function calling, multi-category query tools |
 | **Phase 6** | Double Verification Pipeline | [ ] Pending | Drafter + Verifier pass, deterministic math check, audit log |
 | **Phase 7** | Winter Arc Weekly Planner | [ ] Pending | Holistic weekly planner, interactive check-off board |
@@ -98,14 +98,15 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 4: Personal Finances (Year-End View)
 **Goal:** Provide an income/expense ledger, monthly category budgets, savings goals, and year-end projections that feed into the Winter Arc planner.
-- [ ] Create database migrations for `transactions`, `budgets`, and `goals_money` with RLS.
-- [ ] Build Transaction Ledger: Categorized income and expense logging with date filtering.
-- [ ] Build Monthly Budget Manager: Category allocation progress bars and remaining spend counters.
-- [ ] Implement `/lib/calc/finance.ts`: Deterministic calculation for year-end savings projection based on trailing spending velocity.
-- [ ] Build Money View dashboard with visual runway indicators.
+- [x] Create database migrations for `transactions`, `budgets`, and `goals_money` with RLS. (Verified in 001_initial_schema.sql)
+- [x] Build Transaction Ledger: Categorized income and expense logging with date filtering.
+- [x] Build Monthly Budget Manager: Category allocation progress bars and remaining spend counters.
+- [x] Implement `/lib/calc/finance.ts`: Deterministic calculation for year-end savings projection based on trailing spending velocity and days remaining until Dec 31.
+- [x] Build Money View dashboard with visual runway indicators.
+- [x] Add unit tests in `tests/finance.test.ts` verifying calculation accuracy against known accounting figures.
 - **Verification Criteria:**
-  - Transaction math matches running balances to the cent.
-  - Projections accurately recalculate when new expenses are logged.
+  - Transaction math matches running balances to the cent. (Verified by Vitest test suite)
+  - Projections accurately recalculate when new expenses are logged. (Verified)
 
 ---
 
