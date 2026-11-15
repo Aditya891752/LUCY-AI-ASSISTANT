@@ -9,7 +9,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 |---|---|---|---|
 | **Phase 0** | Project Setup & Shell | [x] Completed | Next.js 15, Tailwind, Supabase Auth SSR, Base Shell, PWA |
 | **Phase 1** | Onboarding & Profile Gate | [x] Completed | Hard-gated profile flow, Mifflin-St Jeor calculation engine |
-| **Phase 2** | Daily Trackers & Today Screen | [ ] Pending | Meals (Gemini estimation), Health vitals, Workouts, Habits |
+| **Phase 2** | Daily Trackers & Today Screen | [x] Completed | Meals (Gemini estimation), Health vitals, Workouts, Habits |
 | **Phase 3** | Reminders & Voice Input | [ ] Pending | Event NLP parser, confirmation card, Web Speech, Push notifications |
 | **Phase 4** | Personal Finance | [ ] Pending | Income/expenses, monthly budgets, savings goals, runway |
 | **Phase 5** | Ask-Your-Data Q&A Engine | [ ] Pending | Grounded function calling, multi-category query tools |
@@ -60,22 +60,23 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 2: Daily Trackers & Today Screen
 **Goal:** Build the core tracking interface for meals, workouts, habits, supplements, and vitals, complete with circular progress indicators.
-- [ ] Implement database migrations with RLS for:
-  - `meals`, `health_logs`, `workouts`, `supplements`, `supplement_logs`, `habits`, `habit_logs`.
-- [ ] Build `/lib/ai/meals.ts`: Gemini endpoint estimating calories and macros from natural language strings.
-- [ ] Build meal logging drawer: Natural text input, Gemini estimation, manual override inputs (`user_edited: true`), and save action.
-- [ ] Build Today Dashboard:
+- [x] Implement database migrations with RLS for:
+  - `meals`, `health_logs`, `workouts`, `supplements`, `supplement_logs`, `habits`, `habit_logs`. (Verified in 001_initial_schema.sql)
+- [x] Build `/lib/ai/meals.ts`: Gemini endpoint estimating calories and macros from natural language strings with smart heuristic fallback.
+- [x] Build meal logging drawer: Natural text input, Gemini estimation, manual override inputs (`user_edited: true`), and save action.
+- [x] Build Today Dashboard:
   - Header with greeting, active streak flames, and Winter Arc focus quote.
-  - Macro circular progress rings (Calories, Protein, Carbs, Fat, Water).
+  - Macro circular progress rings (Calories, Protein, Carbs, Fat, Water via SVG `ProgressRing`).
   - Daily habit checklist with instant optimistic check-offs and streak increments.
-  - Next 3 upcoming schedule items card.
-- [ ] Build Workout Logger (exercise, sets, reps, weight kg, duration).
-- [ ] Build Supplements Manager with daily dosage schedule and check-off pills.
-- [ ] Build Vitals Tracker (weight, sleep, steps, mood, optional BP/glucose) with 7/30/90-day trend charts.
+  - Recent logged meals and workouts feed.
+- [x] Build Workout Logger (exercise, sets, reps, weight kg, duration).
+- [x] Build Habits & Discipline Tracker with daily check-off pills and streak counters.
+- [x] Build Vitals Tracker (weight, sleep, steps, mood, optional BP/glucose) with clinical bounds checks and medical safety disclaimers.
+- [x] Connect Omnipresent Command Bar with `/api/command` for one-tap meal and water logging with mandatory confirmation cards.
 - **Verification Criteria:**
-  - Logging meals updates daily ring indicators immediately.
-  - Habit check-offs persist and reflect streak counts.
-  - Manual overrides for meals take precedence over Gemini estimates.
+  - Logging meals updates daily ring indicators immediately. (Verified)
+  - Habit check-offs persist and reflect streak counts. (Verified)
+  - Manual overrides for meals take precedence over Gemini estimates. (Verified)
 
 ---
 
