@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light Mode Fallback Tokens */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --border: #E2E8F0;
+  --border-active: #CBD5E1;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #0284C7;
+  --accent-foreground: #FFFFFF;
+  --fire: #D97706;
+  --fire-foreground: #FFFFFF;
+  --success: #059669;
+  --danger: #DC2626;
+}
+
+.dark, :root {
+  /* Default: Winter Arc Dark Theme */
+  --background: #090A0F;
+  --foreground: #F3F4F6;
+  --surface-1: #11131A;
+  --surface-2: #181B24;
+  --border: #232734;
+  --border-active: #3E465B;
+  --muted: #181B24;
+  --muted-foreground: #9CA3AF;
+  --accent: #38BDF8;
+  --accent-foreground: #090A0F;
+  --fire: #F59E0B;
+  --fire-foreground: #090A0F;
+  --success: #10B981;
+  --danger: #EF4444;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Tabular numbers for clocks, macros, and financial balances */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar styling - minimal and dark */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
