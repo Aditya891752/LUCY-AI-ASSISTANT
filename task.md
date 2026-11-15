@@ -13,7 +13,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 | **Phase 3** | Reminders & Voice Input | [x] Completed | Event NLP parser, confirmation card, Web Speech, Push notifications |
 | **Phase 4** | Personal Finance | [x] Completed | Income/expenses, monthly budgets, savings goals, runway |
 | **Phase 5** | Ask-Your-Data Q&A Engine | [x] Completed | Grounded function calling, multi-category query tools |
-| **Phase 6** | Double Verification Pipeline | [ ] Pending | Drafter + Verifier pass, deterministic math check, audit log |
+| **Phase 6** | Double Verification Pipeline | [x] Completed | Drafter + Verifier pass, deterministic math check, audit log |
 | **Phase 7** | Winter Arc Weekly Planner | [ ] Pending | Holistic weekly planner, interactive check-off board |
 | **Phase 8** | Polish, Hardening & Deployment | [ ] Pending | A11y, animations, security audit, Vercel deployment |
 
@@ -127,18 +127,19 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 6: Double Verification Pipeline (Critical)
 **Goal:** Implement the two-pass verification architecture to guarantee zero AI hallucinations.
-- [ ] Create database migration for `ai_audit` table.
-- [ ] Implement `/lib/ai/pipeline/drafter.ts`: Generates structured claims with explicit cited record IDs.
-- [ ] Implement `/lib/ai/pipeline/verifier.ts`: Independent low-temperature call that evaluates claims strictly against cited records (`supported`, `partially_supported`, `unsupported`).
-- [ ] Implement `/lib/ai/pipeline/resolver.ts`: Filters out unsupported claims and replaces them with *"not in your records"*; aborts if failure rate > 50%.
-- [ ] Implement `/lib/ai/pipeline/math-check.ts`: Recalculates all sums, averages, and differences in TypeScript and overrides model arithmetic.
-- [ ] Implement `/lib/ai/pipeline/safety-rules.ts`: Enforces safe nutrition bounds and appends physician disclaimers for health vitals.
-- [ ] Add audit logging writing question, draft, verification verdict, and final answer to `ai_audit`.
-- [ ] Update Ask Screen UI: Render green "Verified" badge and expandable "Sources" drawer listing exact cited database records.
-- [ ] Unit test the pipeline resolver with mocked claims and verified records in `tests/verification.test.ts`.
+- [x] Create database migration for `ai_audit` table. (Verified in 001_initial_schema.sql)
+- [x] Implement `/lib/ai/pipeline/drafter.ts`: Generates structured claims with explicit cited record IDs.
+- [x] Implement `/lib/ai/pipeline/verifier.ts`: Independent low-temperature call that evaluates claims strictly against cited records (`supported`, `partially_supported`, `unsupported`).
+- [x] Implement `/lib/ai/pipeline/resolver.ts`: Filters out unsupported claims and replaces them with *"not in your records"*; aborts if failure rate > 50%.
+- [x] Implement `/lib/ai/pipeline/math-check.ts`: Recalculates all sums, averages, and differences in TypeScript and overrides model arithmetic.
+- [x] Implement `/lib/ai/pipeline/safety-rules.ts`: Enforces safe nutrition bounds and appends physician disclaimers for health vitals.
+- [x] Add audit logging writing question, draft, verification verdict, and final answer to `ai_audit` via `/lib/ai/pipeline/audit.ts`.
+- [x] Connect `/api/ai/ask` to run the complete 7-stage double verification pipeline.
+- [x] Update Ask Screen UI: Render green "Verified" badge and expandable "Sources" drawer listing exact cited database records.
+- [x] Unit test the pipeline resolver and master pipeline in `tests/verification.test.ts` and `tests/verification-pipeline.test.ts`.
 - **Verification Criteria:**
-  - Hallucinated claim injected into test draft is automatically caught and removed by the resolver.
-  - Every Q&A answer links to verifiable source records in the UI.
+  - Hallucinated claim injected into test draft is automatically caught and removed by the resolver. (Verified)
+  - Every Q&A answer links to verifiable source records in the UI. (Verified)
 
 ---
 
