@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flame, Target, Droplets, Plus, Check, Clock, Dumbbell, Utensils } from "lucide-react";
+import { Flame, Target, Droplets, Plus, Check, Clock, Dumbbell, Utensils, Calendar, Bell } from "lucide-react";
 import { getProfile } from "@/lib/actions/profile";
 import { getTodaySummary, logWater, toggleHabit, DaySummary } from "@/lib/actions/trackers";
+import { getEvents, dismissEvent, EventRecord } from "@/lib/actions/events";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { cn } from "@/lib/utils";
 
@@ -22,13 +23,21 @@ export default function TodayPage() {
   } | null>(null);
 
   const [summary, setSummary] = useState<DaySummary | null>(null);
+  const [events, setEvents] = useState<EventRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refreshData = async () => {
-    const [profile, sum] = await Promise.all([getProfile(), getTodaySummary()]);
+    const [profile, sum, evts] = await Promise.all([getProfile(), getTodaySummary(), getEvents()]);
     if (profile) setProfileData(profile);
     if (sum) setSummary(sum);
+    if (evts) setEvents(evts);
     setLoading(false);
+  };
+
+  const handleDismissEvent = async (id: string) => {
+    setEvents((prev) => prev.filter((e) => e.id !== id));
+    await dismissEvent(id);
+    refreshData();
   };
 
   useEffect(() => {
@@ -220,6 +229,59 @@ export default function TodayPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* UPCOMING SCHEDULE & REMINDERS (ALEXA-STYLE) */}
+      <section className="bg-surface-1 border border-border rounded-lg p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-accent" />
+            <span>Next Scheduled Events & Alerts</span>
+          </h2>
+          <span className="text-[11px] text-muted-foreground font-mono">
+            {events.length} Upcoming
+          </span>
+        </div>
+
+        {events.length === 0 ? (
+          <div className="text-xs text-muted-foreground py-3 text-center border border-dashed border-border rounded-md">
+            No scheduled events for today. Open Command Bar (⌘K) and say: &quot;Meeting with Rahul on Sunday 5 pm&quot;.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {events.slice(0, 3).map((evt) => (
+              <div
+                key={evt.id}
+                className="bg-surface-2/60 border border-border p-3 rounded flex items-center justify-between"
+              >
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-foreground">{evt.title}</span>
+                    {evt.location && (
+                      <span className="text-[10px] text-muted-foreground bg-surface-1 px-1.5 py-0.2 rounded border border-border">
+                        {evt.location}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+                    <span className="text-accent font-medium">{evt.display_time || "Scheduled"}</span>
+                    {evt.people.length > 0 && (
+                      <span>• With: {evt.people.join(", ")}</span>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleDismissEvent(evt.id)}
+                  title="Mark as completed"
+                  className="p-1.5 rounded hover:bg-surface-1 text-muted-foreground hover:text-success transition-colors"
+                >
+                  <Check className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* LOGGED MEALS & WORKOUTS HISTORY */}

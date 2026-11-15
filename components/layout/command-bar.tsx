@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Mic, MicOff, Send, Sparkles, X, Check, Utensils, Calendar, Droplets } from "lucide-react";
 import { ParsedCommand } from "@/lib/ai/intent";
 import { logMeal, logWater } from "@/lib/actions/trackers";
+import { createEvent } from "@/lib/actions/events";
 import { cn } from "@/lib/utils";
 
 export function CommandBar() {
@@ -123,6 +124,15 @@ export function CommandBar() {
         });
       } else if (confirmationData.type === "health" && confirmationData.metric === "water_ml") {
         await logWater(confirmationData.value);
+      } else if (confirmationData.type === "event") {
+        await createEvent({
+          title: confirmationData.title,
+          starts_at: confirmationData.starts_at,
+          display_time: confirmationData.display_time,
+          people: confirmationData.people,
+          location: confirmationData.location,
+          remind_offsets: confirmationData.remind_offsets,
+        });
       }
 
       setConfirmationData(null);
@@ -274,15 +284,21 @@ export function CommandBar() {
                 )}
 
                 {confirmationData.type === "event" && (
-                  <div className="flex items-center gap-3 bg-surface-2 p-3 rounded border border-border">
-                    <Calendar className="w-5 h-5 text-fire" />
-                    <div>
-                      <div className="text-xs font-semibold text-foreground">
-                        {confirmationData.title}
-                      </div>
+                  <div className="bg-surface-2 p-3.5 rounded border border-border space-y-2">
+                    <div className="flex items-center gap-2 text-fire font-bold text-xs uppercase tracking-wider">
+                      <Calendar className="w-4 h-4" />
+                      <span>Reminder & Schedule Confirmation</span>
+                    </div>
+                    <div className="text-sm font-semibold text-foreground">
+                      {confirmationData.display_time}: {confirmationData.title}. Save?
+                    </div>
+                    {confirmationData.people.length > 0 && (
                       <div className="text-[11px] text-muted-foreground">
-                        Scheduled for {confirmationData.date_str}
+                        Attendees: {confirmationData.people.join(", ")}
                       </div>
+                    )}
+                    <div className="text-[10px] text-muted-foreground flex items-center gap-1.5 pt-1 border-t border-border/50">
+                      <span>Alerts scheduled: 30 min before & at event time (Web Push + In-App)</span>
                     </div>
                   </div>
                 )}

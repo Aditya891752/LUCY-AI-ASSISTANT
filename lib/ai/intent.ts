@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getGeminiClient, getGeminiModelName } from "./client";
 import { estimateMealMacros } from "./meals";
+import { parseEventNaturalLanguage } from "./events";
 
 export const ParsedCommandSchema = z.discriminatedUnion("type", [
   z.object({
@@ -14,9 +15,11 @@ export const ParsedCommandSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("event"),
     title: z.string(),
-    date_str: z.string(),
-    time_str: z.string().optional(),
+    starts_at: z.string(),
+    display_time: z.string(),
+    people: z.array(z.string()),
     location: z.string().optional(),
+    remind_offsets: z.array(z.number()),
   }),
   z.object({
     type: z.literal("health"),
@@ -49,12 +52,16 @@ export async function parseCommandInput(rawInput: string): Promise<ParsedCommand
     };
   }
 
-  if (lower.startsWith("remind me") || lower.startsWith("meeting with") || lower.startsWith("schedule ")) {
+  if (lower.startsWith("remind me") || lower.startsWith("meeting with") || lower.startsWith("schedule ") || lower.includes("at ") && (lower.includes("am") || lower.includes("pm"))) {
+    const parsedEvent = await parseEventNaturalLanguage(text);
     return {
       type: "event",
-      title: text.replace(/^(remind me to\s+|remind me\s+|schedule\s+)/i, ""),
-      date_str: "Today",
-      time_str: "Upcoming",
+      title: parsedEvent.title,
+      starts_at: parsedEvent.starts_at,
+      display_time: parsedEvent.display_time,
+      people: parsedEvent.people,
+      location: parsedEvent.location,
+      remind_offsets: parsedEvent.remind_offsets,
     };
   }
 

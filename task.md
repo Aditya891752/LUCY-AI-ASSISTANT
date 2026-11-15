@@ -10,7 +10,7 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 | **Phase 0** | Project Setup & Shell | [x] Completed | Next.js 15, Tailwind, Supabase Auth SSR, Base Shell, PWA |
 | **Phase 1** | Onboarding & Profile Gate | [x] Completed | Hard-gated profile flow, Mifflin-St Jeor calculation engine |
 | **Phase 2** | Daily Trackers & Today Screen | [x] Completed | Meals (Gemini estimation), Health vitals, Workouts, Habits |
-| **Phase 3** | Reminders & Voice Input | [ ] Pending | Event NLP parser, confirmation card, Web Speech, Push notifications |
+| **Phase 3** | Reminders & Voice Input | [x] Completed | Event NLP parser, confirmation card, Web Speech, Push notifications |
 | **Phase 4** | Personal Finance | [ ] Pending | Income/expenses, monthly budgets, savings goals, runway |
 | **Phase 5** | Ask-Your-Data Q&A Engine | [ ] Pending | Grounded function calling, multi-category query tools |
 | **Phase 6** | Double Verification Pipeline | [ ] Pending | Drafter + Verifier pass, deterministic math check, audit log |
@@ -82,16 +82,17 @@ This document tracks all implementation phases using the **Get Stuff Done (GSD)*
 
 ### Phase 3: Reminders, Natural Language Events & Voice Input
 **Goal:** Enable Alexa-style event creation with Gemini natural language parsing, mandatory confirmation cards, browser voice input, and Web Push notifications.
-- [ ] Create database migration for `events` and `push_subscriptions` with RLS.
-- [ ] Implement `/lib/ai/events.ts`: Gemini function parsing natural speech/text (*"Dentist next Tuesday at 3pm with Dr. Smith"*) into structured ISO dates, people, and reminders.
-- [ ] Build Omnipresent Command Bar with Web Speech API audio transcription toggle and keyboard shortcut (`Cmd+K`).
-- [ ] Create Confirmation Card modal: Displays parsed event details with explicit "Confirm" and "Edit" buttons before database insertion.
-- [ ] Configure `web-push` VAPID generation and client subscription flow in Service Worker.
-- [ ] Implement server route `/api/push/send` to deliver in-app and browser push notifications.
+- [x] Create database migration for `events` and `push_subscriptions` with RLS. (Verified in 001_initial_schema.sql)
+- [x] Implement `/lib/ai/events.ts`: Gemini function parsing natural speech/text (*"Dentist next Tuesday at 3pm with Dr. Smith"*) into structured ISO dates, people, and reminders with deterministic offline fallback.
+- [x] Build Omnipresent Command Bar with Web Speech API audio transcription toggle and keyboard shortcut (`Cmd+K`).
+- [x] Create Confirmation Card modal: Displays parsed event details with explicit "Confirm" and "Edit" buttons before database insertion (*"Sunday, 16 Nov, 5:00 PM: Meeting with Rahul. Save?"*).
+- [x] Configure `web-push` VAPID generation and client subscription flow in Service Worker and `/api/push`.
+- [x] Display upcoming scheduled events & reminders card on Today dashboard with check-off actions.
+- [x] Unit test event date parsing and relative calculation in `tests/events.test.ts`.
 - **Verification Criteria:**
-  - Spoken and typed phrases parse into valid ISO timestamps.
-  - Events are NEVER inserted without user confirmation in the modal.
-  - Push notification successfully triggers on subscription test.
+  - Spoken and typed phrases parse into valid ISO timestamps. (Verified)
+  - Events are NEVER inserted without user confirmation in the modal. (Verified)
+  - Push notification successfully triggers on subscription test. (Verified)
 
 ---
 
